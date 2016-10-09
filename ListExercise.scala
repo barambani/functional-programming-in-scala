@@ -1,6 +1,6 @@
 import scala.annotation.tailrec
 
-object ListExample {
+object ListExercise {
 
   object List {
     def apply[A](as: A*): List[A] =
