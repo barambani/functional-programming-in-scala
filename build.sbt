@@ -12,7 +12,7 @@ initialCommands in console := """
   |import java.util.UUID
   |import scalaz._
   |import Scalaz._
-  |import ListExample._
+  |import ListExercise._
 """.stripMargin
 
 logLevel := Level.Info

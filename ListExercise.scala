@@ -76,8 +76,30 @@ object ListExercise {
       reverse(iter(xs, ys, Nil))
     }
 
+  def tail[A]: List[A] => List[A] =
+    xs => xs match {
+      case Nil          => Nil
+      case Cons(y, ys)  => ys
+    }
 
+  @tailrec
+  def startsWith[A](xs: List[A], sub: List[A]): Boolean = (xs, sub) match {
+    case (_, Nil)                                   => true
+    case (Cons(h1, t1), Cons(h2, t2)) if(h1 == h2)  => startsWith(t1, t2)
+    case _                                          => false
+  }
+
+  @tailrec
+  def hasSubsequence[A](xs: List[A], sub: List[A]): Boolean = xs match {
+    case Nil        => false
+    case Cons(h, t) => if(startsWith(xs, sub)) true else hasSubsequence(t, sub)
+  }
+
+
+  ///////////////////////////////
   //  Operations on lists of Int
+  ///////////////////////////////
+  
   lazy val sum: List[Int] => Int =
     ns => foldRight(ns, 0)(_ + _)
 
