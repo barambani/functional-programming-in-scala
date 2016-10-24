@@ -13,6 +13,7 @@ initialCommands in console := """
   |import scalaz._
   |import Scalaz._
   |import ListExercise._
+  |import TreeExercise._
 """.stripMargin
 
 logLevel := Level.Info
