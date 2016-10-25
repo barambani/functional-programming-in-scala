@@ -96,9 +96,9 @@ object ListExercise {
   }
 
 
-  ///////////////////////////////
-  //  Operations on lists of Int
-  ///////////////////////////////
+  ////////////////////////////////
+  // Operations on lists of Int //
+  ////////////////////////////////
   
   lazy val sum: List[Int] => Int =
     ns => foldRight(ns, 0)(_ + _)
