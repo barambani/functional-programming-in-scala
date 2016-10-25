@@ -16,5 +16,18 @@ object TreeExercise {
     iter(tree)(z)
   }
 
-  def size[A](tree: Tree[A]): Int = ???
+  def size[A](tree: Tree[A]): Int = tree match {
+    case Leaf(_)      => 1
+    case Branch(l, r) => size(l) + size(r) + 1
+  }
+  
+  def max(tree: Tree[Int]): Int = tree match {
+    case Leaf(v)      => v
+    case Branch(l, r) => max(l) max max(r)
+  }
+
+  def depth[A](tree: Tree[A]): Int = tree match {
+    case Leaf(_)      => 1
+    case Branch(l, r) => (depth(l) max depth(r)) + 1
+  }
 }
