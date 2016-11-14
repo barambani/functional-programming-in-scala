@@ -11,8 +11,8 @@ object OptionExercise {
     def flatMap[B]: (A => Option[B]) => Option[B] =
       f => map(f) getOrElse None
 
-    def getOrElse[B >: A]: B => B =
-      d => this match {
+    def getOrElse[B >: A](d: => B): B =
+      this match {
         case Some(v)  => v
         case None     => d
       }
