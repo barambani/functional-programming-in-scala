@@ -17,8 +17,13 @@ object OptionExercise {
         case None     => d
       }
     
-    def orElse[B >: A](ob: => Option[B]): Option[B] = ???
-    def filter: (A => Boolean) => Option[A] = ???
+    def orElse[B >: A](ob: => Option[B]): Option[B] =
+      map(_ => this) getOrElse ob
+
+    def filter: (A => Boolean) => Option[A] =
+      p => flatMap {
+        a => if(p(a)) this else None
+      }
   }
 
   final case class Some[+A](v: A) extends Option[A]

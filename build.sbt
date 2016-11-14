@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq (
-  scalaVersion := "2.12.0"
+  scalaVersion := "2.11.8"
 )
 
 lazy val fpInScala = (project in file(".")).settings(commonSettings: _*)
