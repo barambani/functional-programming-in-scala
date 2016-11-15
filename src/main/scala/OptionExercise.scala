@@ -1,6 +1,6 @@
 object OptionExercise {
 
-  trait Option[+A] extends Product with Serializable {
+  sealed trait Option[+A] extends Product with Serializable {
 
     def map[B]: (A => B) => Option[B] = 
       f => this match {

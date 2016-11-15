@@ -9,6 +9,7 @@ initialCommands in console := """
   |import TreeExercise._
   |import OptionExercise._ 
   |import OptionExercise.Option._
+  |import EitherExercise._
 """.stripMargin
 
 scalacOptions ++= Seq (
