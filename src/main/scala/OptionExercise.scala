@@ -33,6 +33,12 @@ object OptionExercise {
 
     def sequence[A]: List[Option[A]] => Option[List[A]] =
       xs => xs.foldRight[Option[List[A]]](Some(Nil)){ (x, ys) => map2(x, ys)(_ :: _) }
+
+    def traverse[A, B]: List[A] => (A => Option[B]) => Option[List[B]] =
+      xs => f => xs.foldRight[Option[List[B]]](Some(Nil)){ (x, ys) => map2(f(x), ys)(_ :: _) }
+
+    def sequenceT[A]: List[Option[A]] => Option[List[A]] =
+      xs => traverse(xs)(ma => ma)
   }
 
   final case class Some[+A](v: A) extends Option[A]

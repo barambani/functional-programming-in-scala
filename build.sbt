@@ -7,7 +7,8 @@ lazy val fpInScala = (project in file(".")).settings(commonSettings: _*)
 initialCommands in console := """
   |import ListExercise._
   |import TreeExercise._
-  |import OptionExercise._
+  |import OptionExercise._ 
+  |import OptionExercise.Option._
 """.stripMargin
 
 scalacOptions ++= Seq (
