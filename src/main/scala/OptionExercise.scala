@@ -26,6 +26,15 @@ object OptionExercise {
       }
   }
 
+  object Option {
+
+    def map2[A, B, C]: (Option[A], Option[B]) => ((A, B) => C) => Option[C] =
+      (ma, mb) => f => ma flatMap (a => mb map (b => f(a, b)))
+
+    def sequence[A]: List[Option[A]] => Option[List[A]] =
+      xs => xs.foldRight[Option[List[A]]](Some(Nil)){ (x, ys) => map2(x, ys)(_ :: _) }
+  }
+
   final case class Some[+A](v: A) extends Option[A]
   final case object None extends Option[Nothing]
 }
