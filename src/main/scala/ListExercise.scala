@@ -100,13 +100,13 @@ object ListExercise {
   // Operations on lists of Int //
   ////////////////////////////////
   
-  lazy val sum: List[Int] => Int =
+  def sum: List[Int] => Int =
     ns => foldRight(ns, 0)(_ + _)
 
-  lazy val prod: List[Double] => Double =
+  def prod: List[Double] => Double =
     ns => foldRight(ns, 1d)(_ * _)
 
-  lazy val addLists: (List[Int], List[Int]) => List[Int] =
+  def addLists: (List[Int], List[Int]) => List[Int] =
     (xs, ys) => {
       
       @tailrec
