@@ -10,6 +10,7 @@ initialCommands in console := """
   |import OptionExercise._ 
   |import OptionExercise.Option._
   |import EitherExercise._
+  |import StreamsExercise._
 """.stripMargin
 
 scalacOptions ++= Seq (
