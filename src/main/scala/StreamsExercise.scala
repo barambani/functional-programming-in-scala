@@ -21,13 +21,13 @@ object StreamsExercise {
 
     def toList: List[A] = {
       @tailrec
-      def loop(a: Stream[A], s: List[A]): List[A] = 
-        a match {
-          case Empty        => s
-          case Cons(fh, ft) => loop(ft(), fh() :: s )
+      def loop(st: Stream[A], o: List[A]): List[A] = 
+        st match {
+          case Empty        => o
+          case Cons(fh, ft) => loop(ft(), fh() :: o)
         }
 
-      loop(this, Nil)
+      loop(this, Nil).reverse
     }
 
     def toListNotTail: List[A] =
