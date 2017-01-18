@@ -45,8 +45,9 @@ object StreamsExercise {
         case _                      => empty
       }
 
-    def drop: Int => Stream[A] = 
-      n => this match {
+    @tailrec
+    def drop(n: Int): Stream[A] = 
+      this match {
         case Cons(_, ft) if n > 0   => ft().drop(n - 1)
         case _                      => this
       }
@@ -55,6 +56,13 @@ object StreamsExercise {
       p => this match {
         case Cons(fh, ft) if p(fh())  => cons(fh(), ft() takeWhile p)
         case _                        => empty
+      }
+
+    def forAll: (A => Boolean) => Boolean = 
+      p => this match {
+        case Cons(fh, ft) if ft() != Empty  => p(fh()) && ft().forAll(p)
+        case Cons(fh, ft) if ft() == Empty  => p(fh())
+        case _                              => false
       }
   }
 
