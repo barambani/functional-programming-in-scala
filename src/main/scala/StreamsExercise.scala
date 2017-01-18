@@ -58,12 +58,17 @@ object StreamsExercise {
         case _                        => empty
       }
 
-    def forAll: (A => Boolean) => Boolean = 
-      p => this match {
-        case Cons(fh, ft) if ft() != Empty  => p(fh()) && ft().forAll(p)
-        case Cons(fh, ft) if ft() == Empty  => p(fh())
-        case _                              => false
+    def foldRight[B](z: => B)(f: (A, => B) => B): B =
+      this match {
+        case Cons(h, t) => f(h(), t().foldRight(z)(f))
+        case _          => z
       }
+
+    def exists: (A => Boolean) => Boolean =
+      p => this.foldRight(false)((a, b) => b || p(a))
+
+    def forAll: (A => Boolean) => Boolean = 
+      p => this.foldRight(true)(p(_) && _)
   }
 
   object Stream {
