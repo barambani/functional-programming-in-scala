@@ -65,10 +65,18 @@ object StreamsExercise {
       }
 
     def exists: (A => Boolean) => Boolean =
-      p => this.foldRight(false)((a, b) => b || p(a))
+      p => this.foldRight(false){ (a, b) => b || p(a) }
 
     def forAll: (A => Boolean) => Boolean = 
-      p => this.foldRight(true)(p(_) && _)
+      p => this.foldRight(true){ p(_) && _ }
+
+    def takeWhileFold: (A => Boolean) => Stream[A] =
+      p => this.foldRight(empty: Stream[A]){ 
+        (a, b) => if(p(a)) cons(a, b) else empty
+      }
+
+    def headOptionFold: Option[A] =
+      this.foldRight(None: Option[A]){ (a, _) => Some(a) }
   }
 
   object Stream {
