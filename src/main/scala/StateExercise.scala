@@ -27,7 +27,7 @@ object StateExercise {
 
   def intDouble: RNG => ((Int,Double), RNG) =
     rng => {
-      lazy val (i, s)  = nonNegativeInt(rng)
+      lazy val (i, s)  = rng.nextInt
       lazy val (d, s1) = double(s)
       ((i, d), s1)
     }
@@ -44,5 +44,12 @@ object StateExercise {
       lazy val (d2, s1) = double(s)
       lazy val (d3, s2) = double(s1)
       ((d1, d2, d3), s2)
+    }
+
+  def ints: Int => RNG => (List[Int], RNG) =
+    count => rng => (1 to count).foldLeft((Nil, rng): (List[Int], RNG)) {
+      (c, _) => 
+        val (n, s1) = c._2.nextInt
+        (n :: c._1, s1)
     }
 }
