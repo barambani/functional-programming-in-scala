@@ -26,6 +26,9 @@ object OptionExercise {
       }
   }
 
+  final case class Some[+A](v: A) extends Option[A]
+  final case object None extends Option[Nothing]
+  
   object Option {
 
     def map2[A, B, C]: (Option[A], Option[B]) => ((A, B) => C) => Option[C] =
@@ -40,7 +43,4 @@ object OptionExercise {
     def sequenceT[A]: List[Option[A]] => Option[List[A]] =
       xs => traverse(xs)(ma => ma)
   }
-
-  final case class Some[+A](v: A) extends Option[A]
-  final case object None extends Option[Nothing]
 }

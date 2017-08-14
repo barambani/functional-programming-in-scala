@@ -24,6 +24,9 @@ object EitherExercise {
       this flatMap (ra => b map (rb => f(ra, rb)))
   }
 
+  final case class Left[+E](e: E) extends Either[E, Nothing]
+  final case class Right[+A](a: A) extends Either[Nothing, A]
+  
   object Either {
   
     def sequence[E, A]: List[Either[E, A]] => Either[E, List[A]] =
@@ -34,7 +37,4 @@ object EitherExercise {
         (ys, i) => f(i).map2(ys) { _ :: _ }
       }
   }
-
-  final case class Left[+E](e: E) extends Either[E, Nothing]
-  final case class Right[+A](a: A) extends Either[Nothing, A]
 }
