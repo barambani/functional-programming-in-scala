@@ -61,9 +61,9 @@ object StateExercise {
   def unit[A]: A => Rand[A] = 
     a => rng => (a, rng)
 
-  def map[A,B]: Rand[A] => (A => B) => Rand[B] =
-    s => f => rng => {
-      lazy val (x, s1) = s(rng)
+  def _map[A,B]: Rand[A] => (A => B) => Rand[B] =
+    ra => f => rng => {
+      lazy val (x, s1) = ra(rng)
       (f(x), s1)
     }
 
@@ -73,7 +73,7 @@ object StateExercise {
   def double2: Rand[Double] =
     map(nonNegativeInt) { _.toDouble / Int.MaxValue.toDouble }
 
-  def map2[A,B,C]: Rand[A] => Rand[B] => ((A, B) => C) => Rand[C] =
+  def _map2[A,B,C]: Rand[A] => Rand[B] => ((A, B) => C) => Rand[C] =
     ra => rb => f => rng => {
       lazy val (a, s)  = ra(rng)
       lazy val (b, s1) = rb(s)
@@ -99,4 +99,23 @@ object StateExercise {
 
   def ints2: Int => Rand[List[Int]] =
     count => rngs[Int](count)(int)
+
+  def flatMap[A, B]: Rand[A] => (A => Rand[B]) => Rand[B] =
+    ra => f => rng => {
+      lazy val (x, s) = ra(rng)
+      f(x)(s)
+    }
+
+  def nonNegativeLessThan: Int => Rand[Int] =
+    n => flatMap(nonNegativeInt) {
+      x => 
+        lazy val mod = x % n
+        if(x + (n -1) - mod > 0) unit(mod) else nonNegativeLessThan(n)
+    }
+
+  def map[A, B]: Rand[A] => (A => B) => Rand[B] =
+    ra => f => flatMap(ra){ a => unit(f(a)) }
+
+  def map2[A, B, C]: Rand[A] => Rand[B] => ((A, B) => C) => Rand[C] =
+    ra => rb => f => flatMap(ra){ a => map(rb) { b => f(a, b) } }
 }
