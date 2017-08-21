@@ -118,4 +118,38 @@ object StateExercise {
 
   def map2[A, B, C]: Rand[A] => Rand[B] => ((A, B) => C) => Rand[C] =
     ra => rb => f => flatMap(ra){ a => map(rb) { b => f(a, b) } }
+
+  final case class State[+A, S](run: S => (A, S)) {
+    
+    def map[B]: (A => B) => State[B, S] = 
+      f => flatMap { a => (State.unit compose f)(a) } 
+
+    def map2[B, C]: State[B, S] => ((A, B) => C) => State[C, S] =
+      sb => f => flatMap { a => sb map { b => f(a, b) } }
+
+    def flatMap[B]: (A => State[B, S]) => State[B, S] =
+      f => State {
+        s => 
+          lazy val (a, s1) = run(s)
+          f(a).run(s1)
+      }
+  }
+
+  object State {
+
+    def unit[A, S]: A => State[A, S] = 
+      a => State(s => (a, s))
+
+    def sequence[A, S]: List[State[A, S]] => State[List[A], S] =
+      xs => xs.foldRight(unit[List[A], S](Nil)) {
+        (n, s) => n.map2(s) { _ :: _ }
+      }
+
+    def sequenceTailRec[A, S]: List[State[A, S]] => State[List[A], S] =
+      xs => xs.reverse.foldLeft(unit[List[A], S](Nil)) {
+        (s, n) => n.map2(s) { _ :: _ }
+      }
+
+    type Rand[A] = State[RNG, A]
+  }
 }
