@@ -119,15 +119,15 @@ object StateExercise {
   def map2[A, B, C]: Rand[A] => Rand[B] => ((A, B) => C) => Rand[C] =
     ra => rb => f => flatMap(ra){ a => map(rb) { b => f(a, b) } }
 
-  final case class State[+A, S](run: S => (A, S)) {
+  final case class State[S, +A](run: S => (A, S)) {
     
-    def map[B]: (A => B) => State[B, S] = 
+    def map[B]: (A => B) => State[S, B] = 
       f => flatMap { a => (State.unit compose f)(a) } 
 
-    def map2[B, C]: State[B, S] => ((A, B) => C) => State[C, S] =
+    def map2[B, C]: State[S, B] => ((A, B) => C) => State[S, C] =
       sb => f => flatMap { a => sb map { b => f(a, b) } }
 
-    def flatMap[B]: (A => State[B, S]) => State[B, S] =
+    def flatMap[B]: (A => State[S, B]) => State[S, B] =
       f => State {
         s => 
           lazy val (a, s1) = run(s)
@@ -137,19 +137,54 @@ object StateExercise {
 
   object State {
 
-    def unit[A, S]: A => State[A, S] = 
+    def unit[S, A]: A => State[S, A] = 
       a => State(s => (a, s))
 
-    def sequence[A, S]: List[State[A, S]] => State[List[A], S] =
-      xs => xs.foldRight(unit[List[A], S](Nil)) {
+    def sequence[S, A]: List[State[S, A]] => State[S, List[A]] =
+      xs => xs.foldRight(unit[S, List[A]](Nil)) {
         (n, s) => n.map2(s) { _ :: _ }
       }
 
-    def sequenceTailRec[A, S]: List[State[A, S]] => State[List[A], S] =
-      xs => xs.reverse.foldLeft(unit[List[A], S](Nil)) {
+    def sequenceTailRec[S, A]: List[State[S, A]] => State[S, List[A]] =
+      xs => xs.reverse.foldLeft(unit[S, List[A]](Nil)) {
         (s, n) => n.map2(s) { _ :: _ }
       }
 
     type Rand[A] = State[RNG, A]
+
+    def set[S]: S => State[S, Unit] =
+      s => State(_ => ((), s))
+
+    def get[S]: State[S, S] =
+      State(s => (s, s))
+
+    def modify[S]: (S => S) => State[S, Unit] =
+      f => for {
+        s <- get
+        _ <- (set compose f)(s)
+      } yield ()
+  }
+
+  object StateMachine {
+
+    import State._
+
+    sealed trait Input
+    case object Coin extends Input
+    case object Turn extends Input
+
+    final case class Machine(locked: Boolean, candies: Int, coins: Int)
+
+    def simulateMachine: List[Input] => State[Machine, (Int, Int)] =
+      inputs => sequenceTailRec(inputs map step) flatMap { _ => get } map { m => (m.candies, m.coins) }
+
+    private def step: Input => State[Machine, Unit] =
+      i => modify {
+        m => (i, m) match {
+          case (Coin, Machine(true, ca, co)) if(ca > 0) => Machine(false, ca, co + 1)
+          case (Turn, Machine(false, ca, co)) if(ca > 0) => Machine(true, ca - 1, co)
+          case _ => m
+        }
+      }
   }
 }
